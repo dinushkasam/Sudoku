@@ -8,6 +8,10 @@ impl Board {
     pub fn empty() -> Self {
         Self { cells: [[Cell::Empty; 9]; 9] }
     }
+
+    pub fn print_board() {
+        // Impl
+    }
 }
 
 pub struct Game {
