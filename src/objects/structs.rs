@@ -2,6 +2,7 @@ use crate::objects::Difficulty;
 
 use super::enums::Cell;
 
+#[derive(Clone)]
 pub struct Board {
     pub cells: [[Cell; 9]; 9]
 }
