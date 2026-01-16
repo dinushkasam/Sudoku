@@ -1,0 +1,33 @@
+// Sudoku solver
+// Solve a Sudoku grid using backtracking
+// Constraint checking
+use crate::{objects::{Board, Cell}, validation_engine::is_valid};
+
+fn find_empty(board: &Board) -> Option<(usize, usize)> {
+    for r in 0..9 {
+        for c in 0..9 {
+            if board.cells[r][c] == Cell::Empty {
+                return Some((r, c));
+            }
+        }
+    }
+    None
+}
+
+pub fn solve(board: &mut Board) -> bool {
+    if let Some((r, c)) = find_empty(board) {
+        if board.cells[r][c] == Cell::Empty {
+            for n in 1..=9 {
+                if is_valid(board, r, c, n) {
+                    board.cells[r][c] = Cell::Filled(n);
+                    if solve(board) {
+                        return true;
+                    }
+                    board.cells[r][c] = Cell::Empty;
+                }
+            }
+            return false;
+        }
+    }
+    true
+}
