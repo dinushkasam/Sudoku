@@ -1,5 +1,3 @@
-use crate::objects::Location;
-
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Cell {
     Empty,

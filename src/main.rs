@@ -1,4 +1,4 @@
-use crate::{objects::{Board, Cell::{Empty, Given}}, solver::solve, validation_engine::is_valid};
+use crate::{objects::{Board, Cell::{Empty, Given}}, solver::{solve, solve_random}, validation_engine::is_valid};
 
 mod generator;
 mod objects;
@@ -18,5 +18,7 @@ fn main() {
         [Given(7), Empty, Empty, Empty, Empty, Empty, Empty, Given(5), Given(2)],
         [Empty, Given(2), Empty, Given(1), Empty, Empty, Empty, Empty, Given(8)]
     ];
+    // solve_random(&mut board);
     println!("{}", solve(&mut board));
+    board.print_board();
 }
