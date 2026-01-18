@@ -40,9 +40,21 @@ pub struct Game {
     pub player: Player
 }
 
+impl Game {
+    pub fn new(board: Board, solution: Board, player: Player) -> Self {
+        Self { board, solution, player }
+    }
+}
+
 pub struct Player {
     pub row: usize,
     pub col: usize,
+}
+
+impl Player {
+    pub fn new() -> Self {
+        Self { row: 0, col: 0 }
+    }
 }
 
 pub struct GeneratedSudoku {

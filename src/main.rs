@@ -1,9 +1,10 @@
-use crate::{generator::generate_sudoku, objects::{Board, Cell::{Empty, Given}, Difficulty}, solver::{solve, solve_random}, validation_engine::is_valid};
+use crate::{game_loop::{handle_cell_input, handle_movement, read_input, render_board}, generator::generate_sudoku, objects::{Board, Cell::{Empty, Given}, Difficulty, Game, Player}, solver::{solve, solve_random}, validation_engine::is_valid};
 
 mod generator;
 mod objects;
 mod solver;
 mod validation_engine;
+mod game_loop;
 
 fn main() {
     // let mut board = Board::empty();
@@ -21,6 +22,29 @@ fn main() {
     // solve_random(&mut board);
 
     let sudoku = generate_sudoku(Difficulty::Easy);
-    sudoku.puzzle.print_board();
-    sudoku.solution.print_board();
+    let mut player = Player::new();
+    let mut game = Game::new(sudoku.puzzle, sudoku.solution, player);
+
+    loop {
+        render_board(&game.board, &game.player);
+
+        let input = match read_input() {
+            Ok(input) => input,
+            Err(e) => {
+                println!("Error: {}", e);
+                continue;
+            }
+        };
+
+        if input == "q" {
+            break;
+        }
+
+        handle_movement(&input, &mut game.player);
+
+        match handle_cell_input(&input, &mut game) {
+            Ok(()) => continue,
+            Err(e) => println!("Error: {}", e),
+        }
+    }
 }
