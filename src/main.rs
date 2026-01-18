@@ -1,4 +1,4 @@
-use crate::{game_loop::{handle_cell_input, handle_movement, read_input, render_board}, generator::generate_sudoku, objects::{Board, Cell::{Empty, Given}, Difficulty, Game, Player}, solver::{solve, solve_random}, validation_engine::is_valid};
+use crate::{game_loop::{handle_cell_input, handle_movement, is_solved, read_input, render_board}, generator::generate_sudoku, objects::{Board, Cell::{Empty, Given}, Difficulty, Game, Player}, solver::{solve, solve_random}, validation_engine::is_valid};
 
 mod generator;
 mod objects;
@@ -43,7 +43,12 @@ fn main() {
         handle_movement(&input, &mut game.player);
 
         match handle_cell_input(&input, &mut game) {
-            Ok(()) => continue,
+            Ok(()) => {
+                if is_solved(&game.board, &game.solution) {
+                    println!("You solved the puzzle!");
+                    break;
+                }
+            },
             Err(e) => println!("Error: {}", e),
         }
     }

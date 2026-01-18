@@ -62,7 +62,25 @@ pub fn handle_cell_input(input: &str, game: &mut Game) -> Result<(), Box<dyn std
         "0" => {
             game.board.cells[r][c] = Cell::Empty;
             Ok(())
-        }
+        },
+        "enter" | "" => {
+            Ok(())
+        },
+        "w" | "s" | "a" | "d" => {
+            // Movement keys are handled by handle_movement, no cell input needed
+            Ok(())
+        },
         _ => return Err("Invalid input".into()),
     }
+}
+
+pub fn is_solved(board: &Board, solution: &Board) -> bool {
+    for r in 0..9 {
+        for c in 0..9 {
+            if board.cells[r][c].value() != solution.cells[r][c].value() {
+                return false;
+            }
+        }
+    }
+    true
 }
