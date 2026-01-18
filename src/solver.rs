@@ -1,8 +1,11 @@
 // Sudoku solver
 // Solve a Sudoku grid using backtracking
 // Constraint checking
-use rand::{seq::SliceRandom, rng};
-use crate::{objects::{Board, Cell}, validation_engine::is_valid};
+use crate::{
+    objects::{Board, Cell},
+    validation_engine::is_valid,
+};
+use rand::{rng, seq::SliceRandom};
 
 fn find_empty(board: &Board) -> Option<(usize, usize)> {
     for r in 0..9 {

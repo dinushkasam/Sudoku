@@ -58,18 +58,16 @@ pub fn handle_cell_input(input: &str, game: &mut Game) -> Result<(), Box<dyn std
             } else {
                 return Err("Cannot edit given cells".into());
             }
-        },
+        }
         "0" => {
             game.board.cells[r][c] = Cell::Empty;
             Ok(())
-        },
-        "enter" | "" => {
-            Ok(())
-        },
+        }
+        "enter" | "" => Ok(()),
         "w" | "s" | "a" | "d" => {
             // Movement keys are handled by handle_movement, no cell input needed
             Ok(())
-        },
+        }
         _ => return Err("Invalid input".into()),
     }
 }

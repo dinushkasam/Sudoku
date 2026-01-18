@@ -9,7 +9,7 @@ impl Cell {
     pub fn value(&self) -> Option<u8> {
         match self {
             Cell::Given(num) | Cell::Filled(num) => Some(*num),
-            Cell::Empty => None
+            Cell::Empty => None,
         }
     }
 }

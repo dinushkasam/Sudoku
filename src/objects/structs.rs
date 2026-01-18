@@ -4,12 +4,14 @@ use super::enums::Cell;
 
 #[derive(Clone)]
 pub struct Board {
-    pub cells: [[Cell; 9]; 9]
+    pub cells: [[Cell; 9]; 9],
 }
 
 impl Board {
     pub fn empty() -> Self {
-        Self { cells: [[Cell::Empty; 9]; 9] }
+        Self {
+            cells: [[Cell::Empty; 9]; 9],
+        }
     }
 
     pub fn print_board(&self) {
@@ -37,12 +39,16 @@ impl Board {
 pub struct Game {
     pub board: Board,
     pub solution: Board,
-    pub player: Player
+    pub player: Player,
 }
 
 impl Game {
     pub fn new(board: Board, solution: Board, player: Player) -> Self {
-        Self { board, solution, player }
+        Self {
+            board,
+            solution,
+            player,
+        }
     }
 }
 

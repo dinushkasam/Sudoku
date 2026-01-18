@@ -3,7 +3,10 @@
 
 use rand::seq::SliceRandom;
 
-use crate::{objects::{Board, Cell, Difficulty, GeneratedSudoku}, solver::{count_solutions, solve, solve_random}};
+use crate::{
+    objects::{Board, Cell, Difficulty, GeneratedSudoku},
+    solver::{count_solutions, solve, solve_random},
+};
 
 pub fn generate_sudoku(difficulty: Difficulty) -> GeneratedSudoku {
     let mut solution = Board::empty();
@@ -34,5 +37,9 @@ pub fn generate_sudoku(difficulty: Difficulty) -> GeneratedSudoku {
         num_to_remove += 1;
     }
 
-    GeneratedSudoku { puzzle, solution, difficulty }
+    GeneratedSudoku {
+        puzzle,
+        solution,
+        difficulty,
+    }
 }
