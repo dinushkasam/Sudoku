@@ -117,7 +117,10 @@ pub fn render_board(game: &mut Game) -> Result<(), Box<dyn std::error::Error>> {
 
     execute!(out, cursor::MoveTo(0, line))?;
     execute!(out, Clear(ClearType::UntilNewLine))?;
-    writeln!(out, "\nControls: W/S/A/D to move, 1-9 to fill, 0 to clear, z to undo, Enter to check puzzle, q to quit")?;
+    writeln!(
+        out,
+        "\nControls: W/S/A/D to move, 1-9 to fill, 0 to clear, z to undo, Enter to check puzzle, q to quit"
+    )?;
     out.flush()?;
     Ok(())
 }
@@ -188,19 +191,17 @@ pub fn handle_key_input(
             apply_move(game, r, c, Cell::Empty);
             Ok(InputReturnType::Continue)
         }
-        KeyCode::Char('z') => {
-            match undo_move(game) {
-                Ok(()) => Ok(InputReturnType::Continue),
-                Err(e) => {
-                    let mut out = stdout();
-                    execute!(out, cursor::MoveTo(0, 18))?;
-                    execute!(out, Clear(ClearType::UntilNewLine))?;
-                    writeln!(out, "{}", e)?;
-                    out.flush()?;
-                    return Ok(InputReturnType::Continue);
-                }
+        KeyCode::Char('z') => match undo_move(game) {
+            Ok(()) => Ok(InputReturnType::Continue),
+            Err(e) => {
+                let mut out = stdout();
+                execute!(out, cursor::MoveTo(0, 18))?;
+                execute!(out, Clear(ClearType::UntilNewLine))?;
+                writeln!(out, "{:?}", e)?;
+                out.flush()?;
+                return Ok(InputReturnType::Continue);
             }
-        }
+        },
         KeyCode::Enter | KeyCode::Char('\n') => Ok(InputReturnType::CheckPuzzle),
         _ => Ok(InputReturnType::Continue),
     }
