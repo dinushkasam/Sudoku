@@ -43,16 +43,30 @@ pub fn render_board(game: &mut Game) -> Result<(), Box<dyn std::error::Error>> {
     let mut out = stdout();
     let mut line = 0u16;
 
+    // Print difficulty at line 0
+    execute!(out, cursor::MoveTo(0, line))?;
+    execute!(out, Clear(ClearType::UntilNewLine))?;
+    writeln!(out, "Difficulty: {:?}", game.difficulty)?;
+    line += 1;
+
+    // Print top border at line 1
+    execute!(out, cursor::MoveTo(0, line))?;
+    execute!(out, Clear(ClearType::UntilNewLine))?;
+    writeln!(out, "+-------+-------+-------+")?;
+    line += 1;
+
+    // Print board rows starting from line 2
     for r in 0..9 {
         if r % 3 == 0 && r != 0 {
             execute!(out, cursor::MoveTo(0, line))?;
             execute!(out, Clear(ClearType::UntilNewLine))?;
-            writeln!(out, "------+-------+------")?;
+            writeln!(out, "|-------+-------+-------|")?;
             line += 1;
         }
 
         execute!(out, cursor::MoveTo(0, line))?;
         execute!(out, Clear(ClearType::UntilNewLine))?;
+        write!(out, "| ")?;
 
         for c in 0..9 {
             if c % 3 == 0 && c != 0 {
@@ -88,8 +102,14 @@ pub fn render_board(game: &mut Game) -> Result<(), Box<dyn std::error::Error>> {
             }
             execute!(out, ResetColor)?;
         }
+        writeln!(out, "|")?;
         line += 1;
     }
+
+    // Print bottom border
+    execute!(out, cursor::MoveTo(0, line))?;
+    execute!(out, Clear(ClearType::UntilNewLine))?;
+    writeln!(out, "+-------+-------+-------+")?;
     Ok(())
 }
 

@@ -18,22 +18,6 @@ fn find_empty(board: &Board) -> Option<(usize, usize)> {
     None
 }
 
-pub fn solve(board: &mut Board) -> bool {
-    if let Some((r, c)) = find_empty(board) {
-        for n in 1..=9 {
-            if is_valid(board, r, c, n) {
-                board.cells[r][c] = Cell::Filled(n);
-                if solve(board) {
-                    return true;
-                }
-                board.cells[r][c] = Cell::Empty;
-            }
-        }
-        return false;
-    }
-    true
-}
-
 /// Used for Puzzle Generation
 pub fn solve_random(board: &mut Board) -> bool {
     if let Some((r, c)) = find_empty(board) {

@@ -13,30 +13,10 @@ impl Board {
             cells: [[Cell::Empty; 9]; 9],
         }
     }
-
-    pub fn print_board(&self) {
-        println!("+-------+-------+-------+");
-        for (i, row) in self.cells.iter().enumerate() {
-            if i > 0 && i % 3 == 0 {
-                println!("+-------+-------+-------+");
-            }
-            print!("| ");
-            for (j, cell) in row.iter().enumerate() {
-                if j > 0 && j % 3 == 0 {
-                    print!("| ");
-                }
-                match cell {
-                    Cell::Empty => print!(". "),
-                    Cell::Given(n) | Cell::Filled(n) => print!("{} ", n),
-                }
-            }
-            println!("|");
-        }
-        println!("+-------+-------+-------+");
-    }
 }
 
 pub struct Game {
+    pub difficulty: Difficulty,
     pub board: Board,
     pub solution: Board,
     pub player: Player,
@@ -44,8 +24,9 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(board: Board, solution: Board, player: Player) -> Self {
+    pub fn new(difficulty: Difficulty, board: Board, solution: Board, player: Player) -> Self {
         Self {
+            difficulty,
             board,
             solution,
             player,

@@ -14,6 +14,7 @@ impl Cell {
     }
 }
 
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Difficulty {
     Easy,
     Medium,

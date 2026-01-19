@@ -5,7 +5,7 @@ use rand::seq::SliceRandom;
 
 use crate::{
     objects::{Board, Cell, Difficulty, GeneratedSudoku},
-    solver::{count_solutions, solve, solve_random},
+    solver::{count_solutions, solve_random},
 };
 
 pub fn generate_sudoku(difficulty: Difficulty) -> GeneratedSudoku {
