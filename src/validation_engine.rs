@@ -40,13 +40,15 @@ pub fn is_valid(board: &Board, row: usize, col: usize, num: u8) -> bool {
 }
 
 pub fn is_cell_invalid(board: &mut Board, row: usize, col: usize) -> bool {
-    let value = match board.cells[row][col].value() {
-        Some(num) => num,
+    let cell = board.cells[row][col];
+
+    let value = match cell.value() {
+        Some(value) => value,
         None => return false,
     };
 
     board.cells[row][col] = Cell::Empty;
     let valid = is_valid(board, row, col, value);
-    board.cells[row][col] = Cell::Filled(value);
+    board.cells[row][col] = cell;
     !valid
 }
