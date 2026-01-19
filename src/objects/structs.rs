@@ -1,4 +1,4 @@
-use crate::objects::Difficulty;
+use crate::{objects::Difficulty, terminal::restore_terminal};
 
 use super::enums::Cell;
 
@@ -40,6 +40,7 @@ pub struct Game {
     pub board: Board,
     pub solution: Board,
     pub player: Player,
+    pub state: GameState,
 }
 
 impl Game {
@@ -48,6 +49,7 @@ impl Game {
             board,
             solution,
             player,
+            state: GameState::Playing,
         }
     }
 }
@@ -67,4 +69,22 @@ pub struct GeneratedSudoku {
     pub puzzle: Board,
     pub solution: Board,
     pub difficulty: Difficulty,
+}
+
+#[derive(PartialEq)]
+pub enum GameState {
+    Playing,
+    Solved,
+    Failed,
+}
+
+pub struct TerminalGuard;
+
+impl Drop for TerminalGuard {
+    fn drop(&mut self) {
+        match restore_terminal() {
+            Ok(()) => (),
+            Err(e) => println!("Error restoring terminal: {}", e),
+        }
+    }
 }

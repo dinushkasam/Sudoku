@@ -18,4 +18,11 @@ pub enum Difficulty {
     Easy,
     Medium,
     Hard,
+    Extreme,
+}
+
+pub enum InputReturnType {
+    Exit,
+    CheckPuzzle,
+    Continue,
 }

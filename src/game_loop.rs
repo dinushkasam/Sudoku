@@ -1,32 +1,17 @@
-use std::io::{self, Write};
+use std::io::{self, Write, stdout};
 
-use crate::objects::{Board, Cell, Game, Player};
+use crossterm::{
+    cursor, execute,
+    terminal::{Clear, ClearType},
+};
 
-pub fn render_board(board: &Board, player: &Player) {
-    println!("+-------+-------+-------+");
-    for (i, row) in board.cells.iter().enumerate() {
-        if i > 0 && i % 3 == 0 {
-            println!("+-------+-------+-------+");
-        }
-        print!("| ");
-        for (j, cell) in row.iter().enumerate() {
-            if j > 0 && j % 3 == 0 {
-                print!("| ");
-            }
-
-            if player.row == i && player.col == j {
-                print!("@ ");
-            } else {
-                match cell {
-                    Cell::Empty => print!(". "),
-                    Cell::Given(n) | Cell::Filled(n) => print!("{} ", n),
-                }
-            }
-        }
-        println!("|");
-    }
-    println!("+-------+-------+-------+");
-}
+use crate::{
+    objects::{Board, Cell, Game, GameState, InputReturnType, Player, TerminalGuard},
+    terminal::{
+        clear_screen, failure_message, handle_key_input, read_key, render_board, restore_terminal,
+        setup_terminal, success_message,
+    },
+};
 
 pub fn read_input() -> Result<String, io::Error> {
     let mut input = String::new();
@@ -81,4 +66,49 @@ pub fn is_solved(board: &Board, solution: &Board) -> bool {
         }
     }
     true
+}
+
+pub fn run_game(game: &mut Game) -> Result<(), Box<dyn std::error::Error>> {
+    setup_terminal()?;
+    let _guard = TerminalGuard;
+
+    loop {
+        clear_screen()?;
+        render_board(game)?;
+
+        // If game is solved or failed, show message and wait for quit
+        if game.state == GameState::Solved {
+            success_message()?;
+            if let InputReturnType::Exit = handle_key_input(game, read_key()?)? {
+                break;
+            }
+            continue;
+        } else if game.state == GameState::Failed {
+            failure_message()?;
+            match handle_key_input(game, read_key()?)? {
+                InputReturnType::Exit => break,
+                _ => {
+                    game.state = GameState::Playing;
+                    continue;
+                }
+            }
+        }
+
+        match handle_key_input(game, read_key()?)? {
+            InputReturnType::Exit => break (),
+            InputReturnType::CheckPuzzle => {
+                if is_solved(&game.board, &game.solution) {
+                    game.state = GameState::Solved;
+                } else {
+                    game.state = GameState::Failed;
+                }
+                // Re-render to show the message immediately
+                continue;
+            }
+            InputReturnType::Continue => continue,
+        };
+    }
+
+    restore_terminal()?;
+    Ok(())
 }

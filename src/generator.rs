@@ -14,9 +14,10 @@ pub fn generate_sudoku(difficulty: Difficulty) -> GeneratedSudoku {
 
     let mut puzzle = solution.clone();
     let mut num_to_remove = match difficulty {
-        Difficulty::Easy => 1,
+        Difficulty::Easy => 30,
         Difficulty::Medium => 40,
         Difficulty::Hard => 50,
+        Difficulty::Extreme => 60,
     };
 
     let mut positions = Vec::new();
