@@ -11,22 +11,30 @@ permissions:
 jobs:
   build:
     name: Build and Release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         include:
           - target: x86_64-unknown-linux-musl
-            os: linux
-            artifact: sudoku-roguelike-linux
+            os: ubuntu-latest
+            artifact_name: sudoku-roguelike-linux
+            binary_name: sudoku-roguelike
 
-          - target: x86_64-pc-windows-gnu
-            os: windows
-            artifact: sudoku-roguelike-windows.exe
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact_name: sudoku-roguelike-windows.exe
+            binary_name: sudoku-roguelike.exe
 
           - target: x86_64-apple-darwin
-            os: macos-intel
-            artifact: sudoku-roguelike-macos-intel
+            os: macos-latest
+            artifact_name: sudoku-roguelike-macos-intel
+            binary_name: sudoku-roguelike
+
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            artifact_name: sudoku-roguelike-macos-apple-silicon
+            binary_name: sudoku-roguelike
 
     steps:
       - name: Checkout
@@ -38,24 +46,29 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Install Linux dependencies
-        if: matrix.os == 'linux'
+        if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y musl-tools
-
-      - name: Install Windows linker
-        if: matrix.os == 'windows'
-        run: sudo apt-get update && sudo apt-get install -y mingw-w64
 
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Prepare artifact
+      - name: Prepare artifact (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
-          mkdir dist
-          cp target/${{ matrix.target }}/release/* dist/
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/${{ matrix.binary_name }} dist/${{ matrix.artifact_name }}
+          chmod +x dist/${{ matrix.artifact_name }}
+
+      - name: Prepare artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist
+          Copy-Item target/${{ matrix.target }}/release/${{ matrix.binary_name }} dist/${{ matrix.artifact_name }}
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*
+          files: dist/${{ matrix.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
