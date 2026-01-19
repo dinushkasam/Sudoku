@@ -42,7 +42,7 @@ pub fn run_game() -> Result<(), Box<dyn std::error::Error>> {
             }
             continue;
         } else if game.state == GameState::Failed {
-            failure_message(&game)?;
+            failure_message()?;
             match handle_key_input(&mut game, read_key()?)? {
                 InputReturnType::Exit => break,
                 _ => {

@@ -189,8 +189,17 @@ pub fn handle_key_input(
             Ok(InputReturnType::Continue)
         }
         KeyCode::Char('z') => {
-            undo_move(game)?;
-            Ok(InputReturnType::Continue)
+            match undo_move(game) {
+                Ok(()) => Ok(InputReturnType::Continue),
+                Err(e) => {
+                    let mut out = stdout();
+                    execute!(out, cursor::MoveTo(0, 18))?;
+                    execute!(out, Clear(ClearType::UntilNewLine))?;
+                    writeln!(out, "{}", e)?;
+                    out.flush()?;
+                    return Ok(InputReturnType::Continue);
+                }
+            }
         }
         KeyCode::Enter | KeyCode::Char('\n') => Ok(InputReturnType::CheckPuzzle),
         _ => Ok(InputReturnType::Continue),
@@ -205,7 +214,7 @@ pub fn success_message() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-pub fn failure_message(game: &Game) -> Result<(), Box<dyn std::error::Error>> {
+pub fn failure_message() -> Result<(), Box<dyn std::error::Error>> {
     let mut out = stdout();
     execute!(out, cursor::MoveTo(0, 17))?;
     writeln!(out, "💀 Game Over! Press 'q' to quit or continue playing.")?;

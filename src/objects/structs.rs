@@ -89,6 +89,5 @@ pub struct Move {
     pub row: usize,
     pub col: usize,
     pub previous: Cell,
-    pub new: Cell,
     pub mistake_delta: isize,
 }

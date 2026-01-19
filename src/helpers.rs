@@ -23,7 +23,6 @@ pub fn apply_move(game: &mut Game, row: usize, col: usize, new: Cell) {
         row,
         col,
         previous,
-        new,
         mistake_delta,
     });
 }
