@@ -2,6 +2,7 @@ use crate::game_loop::run_game;
 
 mod game_loop;
 mod generator;
+mod helpers;
 mod objects;
 mod solver;
 mod terminal;

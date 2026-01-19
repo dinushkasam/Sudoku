@@ -23,6 +23,8 @@ pub struct Game {
     pub state: GameState,
     pub rules: GameRules,
     pub mistakes: usize,
+    pub undos: usize,
+    pub history: Vec<Move>,
 }
 
 impl Game {
@@ -35,6 +37,8 @@ impl Game {
             state: GameState::Playing,
             rules: difficulty.rules(),
             mistakes: 0,
+            undos: 0,
+            history: Vec::new(),
         }
     }
 }
@@ -77,4 +81,14 @@ impl Drop for TerminalGuard {
 pub struct GameRules {
     pub max_mistakes: Option<usize>,
     pub mistake_highlight: bool,
+    pub max_undos: Option<usize>,
+}
+
+#[derive(Clone)]
+pub struct Move {
+    pub row: usize,
+    pub col: usize,
+    pub previous: Cell,
+    pub new: Cell,
+    pub mistake_delta: isize,
 }

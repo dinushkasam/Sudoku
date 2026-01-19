@@ -46,20 +46,24 @@ impl Difficulty {
     pub fn rules(&self) -> GameRules {
         match self {
             Difficulty::Easy => GameRules {
-                max_mistakes: None,
-                mistake_highlight: true,
-            },
-            Difficulty::Medium => GameRules {
                 max_mistakes: Some(10),
                 mistake_highlight: true,
+                max_undos: Some(10),
+            },
+            Difficulty::Medium => GameRules {
+                max_mistakes: Some(7),
+                mistake_highlight: true,
+                max_undos: Some(7),
             },
             Difficulty::Hard => GameRules {
                 max_mistakes: Some(5),
                 mistake_highlight: true,
+                max_undos: Some(5),
             },
             Difficulty::Extreme => GameRules {
                 max_mistakes: Some(3),
                 mistake_highlight: false,
+                max_undos: Some(3),
             },
         }
     }
