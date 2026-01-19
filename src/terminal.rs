@@ -113,6 +113,12 @@ pub fn render_board(game: &mut Game) -> Result<(), Box<dyn std::error::Error>> {
     execute!(out, cursor::MoveTo(0, line))?;
     execute!(out, Clear(ClearType::UntilNewLine))?;
     writeln!(out, "+-------+-------+-------+")?;
+    line += 1;
+
+    execute!(out, cursor::MoveTo(0, line))?;
+    execute!(out, Clear(ClearType::UntilNewLine))?;
+    writeln!(out, "\nControls: W/S/A/D to move, 1-9 to fill, 0 to clear, z to undo, Enter to check puzzle, q to quit")?;
+    out.flush()?;
     Ok(())
 }
 
@@ -193,7 +199,7 @@ pub fn handle_key_input(
 
 pub fn success_message() -> Result<(), Box<dyn std::error::Error>> {
     let mut out = stdout();
-    execute!(out, cursor::MoveTo(0, 15))?;
+    execute!(out, cursor::MoveTo(0, 17))?;
     writeln!(out, "You solved the puzzle! Press 'q' to quit.")?;
     out.flush()?;
     Ok(())
@@ -201,15 +207,8 @@ pub fn success_message() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn failure_message(game: &Game) -> Result<(), Box<dyn std::error::Error>> {
     let mut out = stdout();
-    execute!(out, cursor::MoveTo(0, 15))?;
+    execute!(out, cursor::MoveTo(0, 17))?;
     writeln!(out, "💀 Game Over! Press 'q' to quit or continue playing.")?;
-    execute!(out, cursor::MoveTo(0, 16))?;
-    writeln!(
-        out,
-        "Mistakes: {}/{}",
-        game.mistakes,
-        game.rules.max_mistakes.unwrap_or(0)
-    )?;
     out.flush()?;
     Ok(())
 }

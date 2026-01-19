@@ -34,11 +34,6 @@ pub fn run_game() -> Result<(), Box<dyn std::error::Error>> {
         clear_screen()?;
         render_board(&mut game)?;
 
-        if is_game_over(&game) {
-            game.state = GameState::Failed;
-            continue;
-        }
-
         // If game is solved or failed, show message and wait for quit
         if game.state == GameState::Solved {
             success_message()?;
@@ -55,6 +50,12 @@ pub fn run_game() -> Result<(), Box<dyn std::error::Error>> {
                     continue;
                 }
             }
+        }
+
+        // Check if game is over (max mistakes reached)
+        if is_game_over(&game) {
+            game.state = GameState::Failed;
+            continue;
         }
 
         match handle_key_input(&mut game, read_key()?)? {
