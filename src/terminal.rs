@@ -7,7 +7,7 @@ use crossterm::{
 };
 use std::io::{Write, stdout};
 
-use crate::objects::{Cell, Game, InputReturnType};
+use crate::objects::{Cell, Difficulty, Game, InputReturnType};
 
 pub fn setup_terminal() -> Result<(), Box<dyn std::error::Error>> {
     terminal::enable_raw_mode()?;
@@ -176,7 +176,7 @@ pub fn handle_key_input(
 
 pub fn success_message() -> Result<(), Box<dyn std::error::Error>> {
     let mut out = stdout();
-    execute!(out, cursor::MoveTo(0, 12))?;
+    execute!(out, cursor::MoveTo(0, 15))?;
     writeln!(out, "You solved the puzzle! Press 'q' to quit.")?;
     out.flush()?;
     Ok(())
@@ -184,11 +184,37 @@ pub fn success_message() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn failure_message() -> Result<(), Box<dyn std::error::Error>> {
     let mut out = stdout();
-    execute!(out, cursor::MoveTo(0, 12))?;
+    execute!(out, cursor::MoveTo(0, 15))?;
     writeln!(
         out,
         "Incorrect solution. Press 'q' to quit or continue playing."
     )?;
+    out.flush()?;
+    Ok(())
+}
+
+pub fn render_difficulty_selector(selected: usize) -> Result<(), Box<dyn std::error::Error>> {
+    let mut out = stdout();
+    execute!(out, cursor::MoveTo(0, 0))?;
+    writeln!(out, "Select Difficulty:\n")?;
+
+    let mut line = 1u16;
+    for (index, difficulty) in Difficulty::all().iter().enumerate() {
+        execute!(out, cursor::MoveTo(0, line))?;
+        execute!(out, Clear(ClearType::UntilNewLine))?;
+        if selected == index {
+            execute!(out, SetForegroundColor(Color::Yellow))?;
+            writeln!(out, "> {}", difficulty.name())?;
+        } else {
+            execute!(out, ResetColor)?;
+            writeln!(out, "- {}", difficulty.name())?;
+        }
+        line += 1;
+    }
+    execute!(out, ResetColor)?;
+    execute!(out, cursor::MoveTo(0, line))?;
+    execute!(out, Clear(ClearType::UntilNewLine))?;
+    writeln!(out, "\nUse W/S and Enter to select difficulty")?;
     out.flush()?;
     Ok(())
 }

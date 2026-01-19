@@ -1,8 +1,4 @@
-use crate::{
-    game_loop::run_game,
-    generator::generate_sudoku,
-    objects::{Difficulty, Game, Player},
-};
+use crate::game_loop::run_game;
 
 mod game_loop;
 mod generator;
@@ -12,11 +8,7 @@ mod terminal;
 mod validation_engine;
 
 fn main() {
-    let sudoku = generate_sudoku(Difficulty::Easy);
-    let player = Player::new();
-    let mut game = Game::new(sudoku.difficulty, sudoku.puzzle, sudoku.solution, player);
-
-    match run_game(&mut game) {
+    match run_game() {
         Ok(()) => (),
         Err(e) => println!("Error: {}", e),
     }
