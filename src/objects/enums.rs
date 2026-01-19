@@ -1,3 +1,5 @@
+use crate::objects::GameRules;
+
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Cell {
     Empty,
@@ -39,6 +41,27 @@ impl Difficulty {
             Difficulty::Hard,
             Difficulty::Extreme,
         ]
+    }
+
+    pub fn rules(&self) -> GameRules {
+        match self {
+            Difficulty::Easy => GameRules {
+                max_mistakes: None,
+                mistake_highlight: true,
+            },
+            Difficulty::Medium => GameRules {
+                max_mistakes: Some(10),
+                mistake_highlight: true,
+            },
+            Difficulty::Hard => GameRules {
+                max_mistakes: Some(5),
+                mistake_highlight: true,
+            },
+            Difficulty::Extreme => GameRules {
+                max_mistakes: Some(3),
+                mistake_highlight: false,
+            },
+        }
     }
 }
 

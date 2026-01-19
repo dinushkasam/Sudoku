@@ -34,6 +34,11 @@ pub fn run_game() -> Result<(), Box<dyn std::error::Error>> {
         clear_screen()?;
         render_board(&mut game)?;
 
+        if is_game_over(&game) {
+            game.state = GameState::Failed;
+            continue;
+        }
+
         // If game is solved or failed, show message and wait for quit
         if game.state == GameState::Solved {
             success_message()?;
@@ -42,7 +47,7 @@ pub fn run_game() -> Result<(), Box<dyn std::error::Error>> {
             }
             continue;
         } else if game.state == GameState::Failed {
-            failure_message()?;
+            failure_message(&game)?;
             match handle_key_input(&mut game, read_key()?)? {
                 InputReturnType::Exit => break,
                 _ => {
@@ -88,4 +93,13 @@ pub fn difficulty_selector() -> Result<Difficulty, Box<dyn std::error::Error>> {
 
 pub fn selected_number(game: &Game) -> Option<u8> {
     game.board.cells[game.player.row][game.player.col].value()
+}
+
+pub fn is_game_over(game: &Game) -> bool {
+    if let Some(max_mistakes) = game.rules.max_mistakes {
+        if game.mistakes >= max_mistakes {
+            return true;
+        }
+    }
+    false
 }

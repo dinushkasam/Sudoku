@@ -46,7 +46,7 @@ pub fn render_board(game: &mut Game) -> Result<(), Box<dyn std::error::Error>> {
     // Print difficulty at line 0
     execute!(out, cursor::MoveTo(0, line))?;
     execute!(out, Clear(ClearType::UntilNewLine))?;
-    writeln!(out, "Difficulty: {:?}", game.difficulty)?;
+    writeln!(out, "Difficulty: {:?} | Mistakes: {}/{}", game.difficulty, game.mistakes, game.rules.max_mistakes.unwrap_or(0))?;
     line += 1;
 
     // Print top border at line 1
@@ -146,16 +146,29 @@ pub fn handle_key_input(
             let r = game.player.row;
             let c = game.player.col;
 
+            // Prevent editing givens
+            if matches!(game.board.cells[game.player.row][game.player.col], Cell::Given(_)) {
+                return Ok(InputReturnType::Continue);
+            }
+
+            if game.solution.cells[r][c].value() != Some(num as u8) {
+                game.mistakes += 1;
+            }
+
             if matches!(game.board.cells[r][c], Cell::Empty | Cell::Filled(_)) {
                 game.board.cells[r][c] = Cell::Filled(num as u8);
-                Ok(InputReturnType::Continue)
-            } else {
-                Err("Cannot edit given cells".into())
             }
+
+            Ok(InputReturnType::Continue)
         }
         KeyCode::Char('0') => {
             let r = game.player.row;
             let c = game.player.col;
+
+            if matches!(game.board.cells[r][c], Cell::Given(_)) {
+                return Ok(InputReturnType::Continue);
+            }
+
             game.board.cells[r][c] = Cell::Empty;
             Ok(InputReturnType::Continue)
         }
@@ -172,13 +185,15 @@ pub fn success_message() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-pub fn failure_message() -> Result<(), Box<dyn std::error::Error>> {
+pub fn failure_message(game: &Game) -> Result<(), Box<dyn std::error::Error>> {
     let mut out = stdout();
     execute!(out, cursor::MoveTo(0, 15))?;
     writeln!(
         out,
-        "Incorrect solution. Press 'q' to quit or continue playing."
+        "💀 Game Over! Press 'q' to quit or continue playing."
     )?;
+    execute!(out, cursor::MoveTo(0, 16))?;
+    writeln!(out, "Mistakes: {}/{}", game.mistakes, game.rules.max_mistakes.unwrap_or(0))?;
     out.flush()?;
     Ok(())
 }
@@ -214,8 +229,10 @@ fn cell_color(game: &mut Game, row: usize, col: usize, selected: Option<u8>) -> 
         return Ok(Color::Yellow);
     }
 
-    if is_cell_invalid(&mut game.board, row, col) {
-        return Ok(Color::Red);
+    if game.rules.mistake_highlight {
+        if is_cell_invalid(&mut game.board, row, col) {
+            return Ok(Color::Red);
+        }
     }
 
     if let Some(num) = selected {
@@ -225,8 +242,8 @@ fn cell_color(game: &mut Game, row: usize, col: usize, selected: Option<u8>) -> 
     }
 
     match game.board.cells[row][col] {
-        Cell::Given(_) => Ok(Color::White),
-        Cell::Filled(_) => Ok(Color::Blue),
+        Cell::Given(_) => Ok(Color::Blue),
+        Cell::Filled(_) => Ok(Color::White),
         Cell::Empty => Ok(Color::DarkGrey),
     }
 }

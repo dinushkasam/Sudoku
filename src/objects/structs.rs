@@ -21,6 +21,8 @@ pub struct Game {
     pub solution: Board,
     pub player: Player,
     pub state: GameState,
+    pub rules: GameRules,
+    pub mistakes: usize,
 }
 
 impl Game {
@@ -31,6 +33,8 @@ impl Game {
             solution,
             player,
             state: GameState::Playing,
+            rules: difficulty.rules(),
+            mistakes: 0,
         }
     }
 }
@@ -68,4 +72,9 @@ impl Drop for TerminalGuard {
             Err(e) => println!("Error restoring terminal: {}", e),
         }
     }
+}
+
+pub struct GameRules {
+    pub max_mistakes: Option<usize>,
+    pub mistake_highlight: bool,
 }
