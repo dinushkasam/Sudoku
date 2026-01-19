@@ -85,3 +85,7 @@ pub fn difficulty_selector() -> Result<Difficulty, Box<dyn std::error::Error>> {
     }
     Ok(Difficulty::all()[selected])
 }
+
+pub fn selected_number(game: &Game) -> Option<u8> {
+    game.board.cells[game.player.row][game.player.col].value()
+}

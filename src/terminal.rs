@@ -7,7 +7,7 @@ use crossterm::{
 };
 use std::io::{Write, stdout};
 
-use crate::objects::{Cell, Difficulty, Game, InputReturnType};
+use crate::{game_loop::selected_number, objects::{Cell, Difficulty, Game, InputReturnType}, validation_engine::is_cell_invalid};
 
 pub fn setup_terminal() -> Result<(), Box<dyn std::error::Error>> {
     terminal::enable_raw_mode()?;
@@ -73,23 +73,13 @@ pub fn render_board(game: &mut Game) -> Result<(), Box<dyn std::error::Error>> {
                 write!(out, "| ")?;
             }
 
+            let color = cell_color(game, r, c, selected_number(game))?;
+            execute!(out, SetForegroundColor(color))?;
+
             let is_cursor = game.player.row == r && game.player.col == c;
 
-            if is_cursor {
-                execute!(out, SetForegroundColor(Color::Yellow))?;
-            }
-
             match game.board.cells[r][c] {
-                Cell::Given(n) => {
-                    if !is_cursor {
-                        execute!(out, SetForegroundColor(Color::Blue))?;
-                    }
-                    write!(out, "{} ", n)?;
-                }
-                Cell::Filled(n) => {
-                    if !is_cursor {
-                        execute!(out, SetForegroundColor(Color::White))?;
-                    }
+                Cell::Given(n) | Cell::Filled(n) => {
                     write!(out, "{} ", n)?;
                 }
                 Cell::Empty => {
@@ -217,4 +207,26 @@ pub fn render_difficulty_selector(selected: usize) -> Result<(), Box<dyn std::er
     writeln!(out, "\nUse W/S and Enter to select difficulty")?;
     out.flush()?;
     Ok(())
+}
+
+fn cell_color(game: &mut Game, row: usize, col: usize, selected: Option<u8>) -> Result<Color, Box<dyn std::error::Error>> {
+    if game.player.row == row && game.player.col == col {
+        return Ok(Color::Yellow);
+    }
+
+    if is_cell_invalid(&mut game.board, row, col) {
+        return Ok(Color::Red);
+    }
+
+    if let Some(num) = selected {
+        if game.board.cells[row][col].value() == Some(num){
+            return Ok(Color::Green);
+        }
+    }
+
+    match game.board.cells[row][col] {
+        Cell::Given(_) => Ok(Color::White),
+        Cell::Filled(_) => Ok(Color::Blue),
+        Cell::Empty => Ok(Color::DarkGrey),
+    }
 }

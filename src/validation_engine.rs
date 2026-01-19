@@ -1,6 +1,6 @@
 // Row, Column Box checks
 // Conflict detection
-use crate::objects::Board;
+use crate::objects::{Board, Cell};
 
 pub fn is_valid(board: &Board, row: usize, col: usize, num: u8) -> bool {
     // Row check
@@ -37,4 +37,16 @@ pub fn is_valid(board: &Board, row: usize, col: usize, num: u8) -> bool {
     }
 
     true
+}
+
+pub fn is_cell_invalid(board: &mut Board, row: usize, col: usize) -> bool {
+    let value = match board.cells[row][col].value() {
+        Some(num) => num,
+        None => return false,
+    };
+
+    board.cells[row][col] = Cell::Empty;
+    let valid = is_valid(board, row, col, value);
+    board.cells[row][col] = Cell::Filled(value);
+    !valid
 }
