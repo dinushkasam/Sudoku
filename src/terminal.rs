@@ -272,7 +272,7 @@ fn cell_color(
     }
 
     match game.board.cells[row][col] {
-        Cell::Given(_) => Ok(Color::Blue),
+        Cell::Given(_) => Ok(Color::Cyan),
         Cell::Filled(_) => Ok(Color::White),
         Cell::Empty => Ok(Color::DarkGrey),
     }

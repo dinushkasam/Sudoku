@@ -62,7 +62,7 @@ impl Difficulty {
             },
             Difficulty::Extreme => GameRules {
                 max_mistakes: Some(3),
-                mistake_highlight: false,
+                mistake_highlight: true,
                 max_undos: Some(3),
             },
         }
